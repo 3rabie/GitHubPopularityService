@@ -1,6 +1,6 @@
 # GitHub Popularity Service (Java)
 
-A small web service that helps you discover popular GitHub repositories. You send a simple query (optionally with language and date filters), and it calls GitHub Search, scores each repository by popularity, and returns a ranked list. It’s built with Spring Boot and OpenFeign, kept intentionally simple and readable.
+A small web service that helps you discover popular GitHub repositories. You send a simple query (optionally with language and date filters), and it calls GitHub Search, scores each repository by popularity, and returns a ranked list. It’s built with Spring Boot and OpenFeign.
 
 Here’s the high‑level flow at a glance:
 
@@ -41,18 +41,6 @@ Rationale
 - Swagger UI: `/swagger-ui.html`
 - OpenAPI JSON: `/v3/api-docs`
 
-## Configuration
-File: `java/src/main/resources/application.yml`
-
-- `server.port`: `8080` (default)
-- `github.apiBaseUrl`: `https://api.github.com` (default)
-- `github.token`: optional Bearer token to raise rate limits
-- `feign.circuitbreaker.enabled`: `true`
-- `feign.client.config.default.connectTimeout`: `3000` ms
-- `feign.client.config.default.readTimeout`: `5000` ms
-
-Headers sent to GitHub: `Accept`, `X-GitHub-Api-Version`, `User-Agent`, optional `Authorization`.
-
 ## Architecture
 Here’s how the pieces fit together:
 
@@ -65,29 +53,15 @@ Here’s how the pieces fit together:
   - Errors (`RestExceptionHandler`): turns upstream errors into consistent JSON responses.
   - Models: controller DTOs (`PopularityResponse`, `RepositoryResponse`), domain (`PopularityResult`, `RepositoryScore`), upstream (`GitHubSearchResponse`, `GitHubRepoItem`).
 
+![Structure](docs/class.png)
+
 - Request flow
   1) Controller receives the request and normalizes inputs.
   2) Service builds the GitHub search string and calls the Feign client.
   3) On success, items are mapped, scored, sorted (desc), and returned as DTOs.
   4) On error, the Feign error decoder throws `GitHubApiException`, and the advice returns 429/502.
 
-- Resilience
-  - Timeouts are set on the Feign client; the circuit breaker is enabled.
-  - No automatic retries to keep behavior predictable and simple.
-
-- Clear boundaries
-  - Controllers speak DTOs; services use domain objects; upstream models are isolated under `client/model`.
-
-Reference diagrams
-
-![Structure](docs/class.png)
-
 ![Decisions](docs/activity.png)
-
-Mermaid sources (optional)
-- `docs/diagrams/sequence.md`
-- `docs/diagrams/class.md`
-- `docs/diagrams/activity.md`
 
 ## Design Decisions
 - HTTP stack
