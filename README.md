@@ -126,3 +126,9 @@ mvn -f java/pom.xml test
 - In‑page ranking only; not a global sort across all pages.
 - Rate limits depend on token usage; unauthenticated calls are constrained.
 - No built‑in retries; relies on timeouts and circuit breaker.
+
+## Note on Development Assistance
+
+During the development of this project, I utilized OpenAI's ChatGPT Codex to accelerate implementation.  
+The overall design, including architecture decisions and UML diagrams (created with PlantUML), was prepared by me.  
+I then guided Codex in generating parts of the code, which helped reduce implementation time while ensuring the final solution aligned with my intended design and requirements.  
